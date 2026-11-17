@@ -1,0 +1,149 @@
+PROMPT OPTIMIZADO: Turop (web responsive + móvil)
+1. Rol y objetivo
+
+Actúa como un desarrollador full-stack senior y diseñador UI/UX. Construye Turop, una aplicación web responsive (mobile-first) que funcione igual de bien en celular, tablet y computador. Turop permite a las personas crear o comprar perfiles de plataformas de streaming y compartirlos (rentarlos) con otras personas, indicando a cada usuario cuánto debe pagar y cuál es su porcentaje de ahorro.
+
+Promesa central de marca: "Con Turop ahorras hasta un 70%".
+
+2. Stack sugerido
+Frontend: React + Vite (o Next.js), TypeScript, Tailwind CSS, React Router, Framer Motion (animaciones), react-hook-form + zod (formularios).
+Mapa: react-simple-maps o d3-geo con TopoJSON del mundo.
+Slider: Swiper o Embla Carousel.
+Backend: Node/Express o rutas API de Next.js, PostgreSQL (o Supabase/Firebase).
+Pagos: pasarela certificada (Stripe, Wompi, PayU o MercadoPago). Nunca guardar ni procesar el número completo de tarjeta ni el CVV en nuestra base de datos; usar los campos/tokenización de la pasarela.
+Datos de países: country-state-city o libphonenumber-js (indicativos telefónicos y validación).
+3. Sistema de diseño
+Paleta (usar SOLO estos colores y sus variaciones de opacidad/gradiente)
+Token	Hex	Uso
+--bg-base	
+#02010A	Fondo principal, footer
+--bg-deep	
+#04052E	Fondos de secciones alternas, tarjetas oscuras
+--surface	
+#140152	Tarjetas, inputs, paneles
+--primary	
+#22007C	Bordes activos, botones secundarios, hover
+--accent	
+#0D00A4	Color más vibrante: CTA, mapa, acentos, íconos activos
+--text	
+#F5F4FF	Texto principal (blanco con leve tinte violeta)
+--text-muted	
+#F5F4FF al 60%	Texto secundario
+Gradiente de marca (botones y elementos destacados): #22007C → #0D00A4. Se permite un brillo/"glow" con 
+#0D00A4 al 40% de opacidad.
+Estilo visual: oscuro, premium, minimalista, con tipografía grande y limpia (referencia: landing de Flowty), tarjetas tipo glass (fondo 
+#140152 al 40-60%, backdrop-blur, borde de 1px blanco al 8%), gradientes suaves de fondo en violeta/azul y esquinas muy redondeadas (16-28px).
+Tipografía: sans geométrica (Outfit, Sora o Plus Jakarta Sans). Títulos hero entre 40px (móvil) y 96px (escritorio), peso 500.
+Contraste mínimo WCAG AA en todo el texto.
+Responsive
+Mobile-first. Breakpoints: 360 / 768 / 1024 / 1440.
+Móvil: navegación simple, columnas apiladas, botones de ancho completo, áreas táctiles ≥ 44px.
+Escritorio: contenedor máximo de 1200px, rejillas de 2-4 columnas.
+Probar en 360px, 768px y 1440px sin scroll horizontal.
+Logo
+
+Usar el logo de Turop adjunto (ícono redondeado azul/violeta con "T", símbolo de play y tarjeta, más el texto "turop"). Exportar versiones: completa (ícono + texto), solo ícono (favicon/PWA) y horizontal para el encabezado.
+
+4. Pantallas y flujo
+4.1 Splash / pantalla de carga
+Fondo 
+#02010A, logo centrado con aparición suave (fade + scale).
+Debajo del logo, una barra de progreso delgada (3-4px, esquinas redondeadas) que se llena de izquierda a derecha (gradiente #22007C → #0D00A4) mientras la app carga recursos reales (fuentes, datos iniciales, sesión). Duración mínima 1.2 s para evitar parpadeos.
+Al completar, transición con fade hacia la landing.
+4.2 Landing (usuario sin sesión)
+Banner hero: texto grande "Con Turop ahorras hasta un 70%" sobre gradiente oscuro violeta/azul.
+Descripción (debajo del banner): "Turop es la forma más inteligente de disfrutar tus plataformas favoritas. Compra o crea perfiles de streaming, compártelos con otras personas y Turop te dice exactamente cuánto pagas y cuánto ahorras."
+Botón "Registrarme" (CTA principal, gradiente de marca) que lleva al formulario de registro.
+4.3 Registro
+
+Formulario en una sola columna (tarjeta centrada en escritorio, pantalla completa en móvil), con validación en tiempo real y mensajes de error claros:
+
+Nombre completo (obligatorio, mín. 2 caracteres).
+Correo electrónico (formato válido, único).
+País (selector con búsqueda). Al elegirlo, se detecta/precarga el indicativo telefónico (ej. Colombia +57).
+Celular: campo con el indicativo del país ya puesto (bandera + código), el usuario solo escribe el número; validar longitud y formato según el país.
+Método de pago: al tocar "Agregar método de pago" se despliega una lista de opciones según el país elegido. Ejemplo Colombia: Nequi, Daviplata, Bancolombia, Banco de Bogotá, Davivienda, Banco Santander, etc. Otros países cargan su propia lista (configurable en JSON/BD por país).
+Datos de tarjeta: campo seguro con número, vencimiento y CVV mediante el componente de la pasarela de pagos (tokenizado). Mostrar ícono de candado y texto "Tus datos están protegidos".
+Checkbox "Acepto las políticas de uso y tratamiento de datos" (obligatorio, con enlace a la política).
+Botón "Crear cuenta" (deshabilitado hasta que el formulario sea válido; con estado de carga).
+
+Al crear la cuenta correctamente: iniciar sesión automáticamente y redirigir a la Página principal.
+
+4.4 Página principal (usuario con sesión)
+
+Orden de arriba hacia abajo:
+
+Encabezado: logo de Turop (a la izquierda) y menú de usuario / avatar (a la derecha).
+Sección de perfiles (main):
+Muestra el logo de la plataforma del perfil elegido por el usuario.
+Una tarjeta cuadrada de bordes redondeados con un círculo con "+" adentro y debajo el texto "Agregar perfil".
+Cada vez que el usuario guarda un perfil, aparece su tarjeta y al lado se muestra de nuevo la tarjeta "Agregar perfil" para seguir registrando más (rejilla que hace wrap en móvil, 2 columnas en móvil, 4+ en escritorio).
+Al hacer clic en una tarjeta de perfil se abre el detalle del perfil (ver 4.6).
+Reseñas (máximo 3): tarjetas con avatar, nombre, país, calificación en estrellas y comentario corto sobre la satisfacción. Carrusel en móvil, 3 columnas en escritorio.
+Mapamundi: mapa del mundo en gris opaco (ej. 
+#FFFFFF al 10-15%); los países/zonas aproximadas donde se usa la app se pintan con el color más vibrante de la paleta (
+#0D00A4) con leve glow. Tooltip al pasar el cursor/tocar con el nombre del país y el número de usuarios. Mostrar solo ubicación aproximada a nivel país (no datos personales).
+Slider de plataformas más populares: carrusel con tarjetas de cada plataforma (nombre, posición en el ranking, % de usuarios en Turop, ahorro promedio). Autoplay lento, flechas en escritorio y swipe en móvil.
+Footer oscuro (
+#02010A) con el botón "Leer más", enlaces legales y redes. El botón lleva a la página "Acerca de Turop".
+4.5 Agregar perfil (pestaña/ruta aparte)
+
+Flujo en 3 pasos con indicador de progreso:
+
+Elegir plataforma: cuadrícula de plataformas de streaming (Netflix, Disney+, Prime Video, Spotify, Max, YouTube Premium, etc.) con buscador.
+Elegir plan por número de usuarios en la cuenta: tarjetas para 2, 3 o 4 usuarios, cada una con el precio que paga cada persona y el % de ahorro frente al precio individual.
+Elegir duración: mensual, semestral o anual (los planes largos con mayor descuento, destacar el de mejor ahorro).
+
+Al final: resumen (plataforma, plan, duración, total a pagar, ahorro estimado) y botón "Confirmar perfil". Al confirmar, se guarda y se regresa a la página principal con el nuevo perfil visible.
+
+4.6 Detalle del perfil
+
+Al tocar un perfil se abre un panel (modal en escritorio, pantalla completa en móvil) con:
+
+Ahorro anual acumulado (en moneda local y %).
+Tiempo de uso del perfil (días/meses desde la activación y fecha de vencimiento).
+Cuánto le toca pagar (valor por período y próxima fecha de cobro).
+Plataforma, plan y número de usuarios.
+4.7 Página "Acerca de Turop" (Leer más)
+
+Secciones: Misión, Visión, Usuarios alcanzados (contadores animados), Alianzas (logos de aliados), Países donde operamos y otros datos relevantes (año de fundación, ahorro total generado, preguntas frecuentes).
+
+5. Modelo de datos (mínimo)
+users: id, nombre, email, país, indicativo, celular, método_pago_id, acepta_politicas, creado_en.
+payment_methods: id, user_id, tipo, entidad, token_pasarela (nunca datos de tarjeta en claro).
+platforms: id, nombre, logo, categoría, popularidad.
+plans: id, platform_id, usuarios_por_cuenta (2/3/4), duración (mensual/semestral/anual), precio_total, precio_por_usuario, porcentaje_ahorro.
+profiles: id, user_id, platform_id, plan_id, fecha_inicio, fecha_fin, estado.
+reviews: id, user_id, rating, comentario, aprobada.
+country_stats: país, usuarios (alimenta el mapa).
+payment_banks_by_country: país, lista de bancos/billeteras.
+6. Reglas de calidad
+Accesibilidad: etiquetas en formularios, foco visible, navegación por teclado, alt en imágenes, prefers-reduced-motion.
+Estados de carga, vacío y error en todas las vistas (skeletons con colores de la paleta).
+Animaciones sutiles (200-400 ms), sin saturar.
+Rendimiento: imágenes optimizadas (WebP/SVG), carga diferida del mapa y slider, objetivo Lighthouse ≥ 90.
+Seguridad: HTTPS, contraseñas/sesiones con estándares actuales, validación en servidor, protección CSRF/XSS, cumplimiento de protección de datos (p. ej. Ley 1581 en Colombia / GDPR según país).
+Internacionalización preparada (español por defecto, estructura lista para inglés), monedas y formatos según país.
+Código organizado por componentes reutilizables (Button, Card, Input, ProfileCard, PlanCard, WorldMap, Slider) y variables CSS/tokens para la paleta.
+7. Entregables y orden de trabajo
+Configuración del proyecto + tokens de diseño (colores, tipografía, espaciados).
+Splash con barra de progreso y landing.
+Registro con selector de país, indicativo, bancos por país y tarjeta tokenizada.
+Página principal (perfiles, reseñas, mapa, slider, footer).
+Flujo "Agregar perfil" y detalle del perfil con cálculos de ahorro.
+Página "Acerca de Turop".
+Pruebas responsive y de accesibilidad; README con instrucciones de instalación y variables de entorno.
+8. Criterios de aceptación
+El splash muestra el logo y una barra que avanza de izquierda a derecha según el progreso real de carga.
+Todo el texto, botones y gráficos usan únicamente la paleta definida.
+Al elegir un país, el indicativo telefónico y la lista de bancos se actualizan automáticamente.
+Tras "Crear cuenta" el usuario aterriza en la página principal; tras guardar un perfil aparece una nueva tarjeta "Agregar perfil" a su lado.
+El mapa muestra el mundo en gris opaco y los países con usuarios en 
+#0D00A4.
+La app es totalmente usable en 360px de ancho y en pantallas de escritorio de 1440px.
+9. Supuestos que debes confirmar o ajustar
+Los logos de plataformas (Netflix, Disney+, etc.) son marcas registradas: usar íconos genéricos/placeholder hasta tener autorización, o mostrar solo el nombre en texto.
+Compartir credenciales de cuentas de streaming puede ir contra los términos de servicio de varias plataformas; conviene revisar el modelo legal (p. ej. planes familiares oficiales o alianzas) antes de lanzar.
+Los precios, descuentos, reseñas y estadísticas iniciales serán datos de ejemplo (seed) hasta conectar datos reales.
+
+https://stream-bell-reminder.lovable.app/servicios?p=disney
